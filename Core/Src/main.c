@@ -20,9 +20,7 @@ int main()
 	UART_Init();
 
 	char data[5] = "blaa\n\r";
-	char iha;
 
-	char bla;
 	while(1)
 	{
 		HAL_UART_Transmit(&console_output, (uint8_t*)&data, 5, HAL_UART_TIMEOUT_VALUE);
