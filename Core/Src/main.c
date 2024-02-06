@@ -20,6 +20,7 @@ int main()
 	UART_Init();
 
 	char data[5] = "blaa\n\r";
+	char iha;
 
 	while(1)
 	{
