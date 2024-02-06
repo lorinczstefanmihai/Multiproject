@@ -19,7 +19,7 @@ int main()
 	HAL_Init();
 	UART_Init();
 
-	char data[5] = "mrrr\n\r";
+	char data[5] = "blaa\n\r";
 
 	while(1)
 	{
