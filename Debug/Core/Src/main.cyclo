@@ -1,3 +1,4 @@
-../Core/Src/main.c:24:5:main	2
-../Core/Src/main.c:40:6:UART_Init	3
-../Core/Src/main.c:67:6:Error_handler	1
+../Core/Src/main.c:24:5:main	1
+../Core/Src/main.c:38:6:UART_Init	3
+../Core/Src/main.c:65:6:Error_handler	1
+../Core/Src/main.c:70:6:HAL_UART_RxCpltCallback	1

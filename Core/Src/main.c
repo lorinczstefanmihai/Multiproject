@@ -31,10 +31,8 @@ int main()
 
 	while(1)
 	{
-		if(HAL_UART_Receive(&uart_gps,(uint8_t*)&data, 1, 100) == HAL_OK)
-			HAL_UART_Transmit(&console_output, (uint8_t*)&data, 1, HAL_UART_TIMEOUT_VALUE);
+		HAL_UART_Receive_IT(&uart_gps,(uint8_t*)&data, 1);
 	}
-
 }
 
 void UART_Init()
@@ -67,4 +65,9 @@ void UART_Init()
 void Error_handler()
 {
 	while(1);
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	HAL_UART_Transmit(&console_output, (uint8_t*)&data, 1, HAL_UART_TIMEOUT_VALUE);
 }
