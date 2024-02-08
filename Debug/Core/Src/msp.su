@@ -1,2 +1,2 @@
 ../Core/Src/msp.c:9:6:HAL_MspInit	8	static
-../Core/Src/msp.c:20:6:HAL_UART_MspInit	48	static
+../Core/Src/msp.c:20:6:HAL_UART_MspInit	64	static
