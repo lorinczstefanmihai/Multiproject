@@ -8,6 +8,7 @@
 
 #include "stm32g0xx_hal.h"
 #include "main.h"
+#include "NMEA.h"
 
 void UART_Init();
 void Error_handler();
@@ -16,10 +17,14 @@ UART_HandleTypeDef console_output;
 UART_HandleTypeDef uart_gps;
 
 
-char data;
+
+
+char data[550];
 
 char start_console_message[30] = "---- STM32 RUNNNING ----";
 char loading_console_message[40] = "GPS MODULE IS SEARCHING SIGNAL \n\r";
+
+GPGGA_struct gpgga;
 
 int main()
 {
@@ -31,8 +36,9 @@ int main()
 
 	while(1)
 	{
-		HAL_UART_Receive_IT(&uart_gps,(uint8_t*)&data, 1);
+		HAL_UART_Receive_IT(&uart_gps,(uint8_t*)&data, 700);
 	}
+
 }
 
 void UART_Init()
@@ -69,5 +75,10 @@ void Error_handler()
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-	HAL_UART_Transmit(&console_output, (uint8_t*)&data, 1, HAL_UART_TIMEOUT_VALUE);
+
+	//char *p = &data;
+
+	if(decode_NMEA_message(data, &gpgga) != 0)
+		HAL_UART_Transmit(&console_output, (uint8_t*)&data, 700, HAL_UART_TIMEOUT_VALUE);
+
 }

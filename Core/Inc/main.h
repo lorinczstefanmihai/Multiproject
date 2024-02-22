@@ -10,4 +10,10 @@
 
 #include "stm32g0xx_hal.h"
 
+typedef enum
+{
+	FALSE,
+	TRUE
+}bool;
+
 #endif /* INC_MAIN_H_ */
