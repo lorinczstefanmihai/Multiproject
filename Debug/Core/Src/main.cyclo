@@ -2,3 +2,4 @@
 ../Core/Src/main.c:44:6:UART_Init	3
 ../Core/Src/main.c:71:6:Error_handler	1
 ../Core/Src/main.c:76:6:HAL_UART_RxCpltCallback	2
+../Core/Src/main.c:85:6:UART_GPS	4

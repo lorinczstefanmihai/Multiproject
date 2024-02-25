@@ -10,16 +10,32 @@
 
 #include "main.h"
 
+
 typedef struct
 {
-	uint32_t time;
+	uint8_t hr;
+	uint8_t min;
+	uint8_t sec;
+}time_format;
+
+typedef struct
+{
 	float latitude;
+	char NS;
 	float longitude;
+	char EW;
+}location_format;
+
+typedef struct
+{
+	time_format time;
+	location_format location;
 	uint8_t fix_quality;
-	uint8_t nr_of_satellites;
+	int nr_of_satellites;
 	float hdop;
 	float altitude;
 }GPGGA_struct;
+
 
 
 bool decode_NMEA_message(char input_data[550], GPGGA_struct *gpgga);

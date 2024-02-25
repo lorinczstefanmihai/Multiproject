@@ -9,7 +9,7 @@
 #include "stm32g0xx_hal.h"
 #include "main.h"
 #include "NMEA.h"
-
+#include <stdio.h>
 void UART_Init();
 void Error_handler();
 
@@ -28,7 +28,7 @@ GPGGA_struct gpgga;
 
 int main()
 {
-	HAL_Init();
+ 	HAL_Init();
 	UART_Init();
 
 	HAL_UART_Transmit(&console_output,(uint8_t*)&start_console_message, 24, HAL_UART_TIMEOUT_VALUE);
@@ -76,9 +76,64 @@ void Error_handler()
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 
-	//char *p = &data;
+	if(decode_NMEA_message(data, &gpgga) != FALSE)
+	UART_GPS();
+		//	HAL_UART_Transmit(&console_output, (uint8_t*)&data, 700, HAL_UART_TIMEOUT_VALUE);
 
-	if(decode_NMEA_message(data, &gpgga) != 0)
-		HAL_UART_Transmit(&console_output, (uint8_t*)&data, 700, HAL_UART_TIMEOUT_VALUE);
+}
+
+void UART_GPS()
+{
+	char start_gps_message[13] = "GPS data: \n";
+	char time_message[6] = "Time:";
+	char latitude_message[12] = "\nLatitude:";
+	char longitude_message[13] = "\nLongitude:";
+	char nr_satttelites_message[24] = "\nNumber of satellites:";
+	char altitude[12] = "\nAltitude:";
+
+	char a[10], b[10];
+	memset(a,'\0',12);
+	memset(b,'\0',12);
+
+
+
+
+	HAL_UART_Transmit(&console_output, start_gps_message, 12, HAL_UART_TIMEOUT_VALUE);
+
+	HAL_UART_Transmit(&console_output, time_message, 6, HAL_UART_TIMEOUT_VALUE);
+
+	sprintf(b, "%d", gpgga.time.hr);
+	if(gpgga.time.hr < 10)
+	{
+		strcat(a,"0");
+	}
+
+	strcat(a,b);
+	strcat(a,":");
+
+	sprintf(b, "%d", gpgga.time.min);
+	if(gpgga.time.min < 10)
+	{
+		strcat(a,"0");
+	}
+
+	strcat(a,b);
+	strcat(a,":");
+
+	sprintf(b, "%d", gpgga.time.sec);
+	if(gpgga.time.sec < 10)
+	{
+		strcat(a,"0");
+	}
+
+	strcat(a,b);
+	strcat(a,"\n");
+
+	HAL_UART_Transmit(&console_output, a, strlen(a), HAL_UART_TIMEOUT_VALUE);
+
+	//HAL_UART_Transmit(&console_output, latitude_message, 12, HAL_UART_TIMEOUT_VALUE);
+	//HAL_UART_Transmit(&console_output, gpgga.location.latitude, 12, HAL_UART_TIMEOUT_VALUE);
+
+
 
 }
