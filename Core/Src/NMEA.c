@@ -13,7 +13,7 @@
 
 bool decode_NMEA_message(char input_data[550], GPGGA_struct *gpgga)
 {
-	int idx = 0, i = 0, integral_part, fractional_part, data;
+	int idx = 0, i = 0, integral_part, fractional_part, data, valid_id ;
 
 	char buffer[12];
 	memset(buffer,'\0',12);
@@ -28,6 +28,23 @@ bool decode_NMEA_message(char input_data[550], GPGGA_struct *gpgga)
 	}
 
 	idx += 6; // We also take in consideration the comma
+
+	valid_id = idx;
+
+	for(int i = 0; i <= 5; i++)
+	{
+		while(input_data[valid_id] != ',')
+			{
+				valid_id++;
+			}
+		valid_id++;
+	}
+
+ 	if(input_data[valid_id] < 49)
+	{
+		return FALSE;
+	}
+
 
 	while(input_data[idx] != ',')
 	{

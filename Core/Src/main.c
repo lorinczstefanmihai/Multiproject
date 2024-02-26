@@ -16,12 +16,11 @@ void Error_handler();
 UART_HandleTypeDef console_output;
 UART_HandleTypeDef uart_gps;
 
-
-
+char message_gps_not_connected[31] = "GPS SATELLITE NOT CONNECTED \n";
 
 char data[550];
 
-char start_console_message[30] = "---- STM32 RUNNNING ----";
+char start_console_message[30] = "---- STM32 RUNNNING ---- \n";
 char loading_console_message[40] = "GPS MODULE IS SEARCHING SIGNAL \n\r";
 
 GPGGA_struct gpgga;
@@ -31,7 +30,7 @@ int main()
  	HAL_Init();
 	UART_Init();
 
-	HAL_UART_Transmit(&console_output,(uint8_t*)&start_console_message, 24, HAL_UART_TIMEOUT_VALUE);
+	HAL_UART_Transmit(&console_output,(uint8_t*)&start_console_message, 27, HAL_UART_TIMEOUT_VALUE);
 
 
 	while(1)
@@ -76,8 +75,14 @@ void Error_handler()
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 
+
 	if(decode_NMEA_message(data, &gpgga) != FALSE)
-	UART_GPS();
+	{
+		UART_GPS();
+	}
+	else{
+		HAL_UART_Transmit(&console_output, (uint8_t*)&message_gps_not_connected, 30, HAL_UART_TIMEOUT_VALUE);
+	}
 		//	HAL_UART_Transmit(&console_output, (uint8_t*)&data, 700, HAL_UART_TIMEOUT_VALUE);
 
 }
@@ -91,9 +96,9 @@ void UART_GPS()
 	char nr_satttelites_message[24] = "\nNumber of satellites:";
 	char altitude[12] = "\nAltitude:";
 
-	char a[10], b[10];
-	memset(a,'\0',12);
-	memset(b,'\0',12);
+	char string[10], substring[10];
+	memset(string,'\0',12);
+	memset(substring,'\0',12);
 
 
 
@@ -102,34 +107,34 @@ void UART_GPS()
 
 	HAL_UART_Transmit(&console_output, time_message, 6, HAL_UART_TIMEOUT_VALUE);
 
-	sprintf(b, "%d", gpgga.time.hr);
+	sprintf(substring, "%d", gpgga.time.hr);
 	if(gpgga.time.hr < 10)
 	{
-		strcat(a,"0");
+		strcat(string,"0");
 	}
 
-	strcat(a,b);
-	strcat(a,":");
+	strcat(string,substring);
+	strcat(string,":");
 
-	sprintf(b, "%d", gpgga.time.min);
+	sprintf(substring, "%d", gpgga.time.min);
 	if(gpgga.time.min < 10)
 	{
-		strcat(a,"0");
+		strcat(string,"0");
 	}
 
-	strcat(a,b);
-	strcat(a,":");
+	strcat(string,substring);
+	strcat(string,":");
 
-	sprintf(b, "%d", gpgga.time.sec);
+	sprintf(substring, "%d", gpgga.time.sec);
 	if(gpgga.time.sec < 10)
 	{
-		strcat(a,"0");
+		strcat(string,"0");
 	}
 
-	strcat(a,b);
-	strcat(a,"\n");
+	strcat(string,substring);
+	strcat(string,"\n");
 
-	HAL_UART_Transmit(&console_output, a, strlen(a), HAL_UART_TIMEOUT_VALUE);
+	HAL_UART_Transmit(&console_output, string, strlen(string), HAL_UART_TIMEOUT_VALUE);
 
 	//HAL_UART_Transmit(&console_output, latitude_message, 12, HAL_UART_TIMEOUT_VALUE);
 	//HAL_UART_Transmit(&console_output, gpgga.location.latitude, 12, HAL_UART_TIMEOUT_VALUE);

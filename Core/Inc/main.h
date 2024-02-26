@@ -12,8 +12,8 @@
 
 typedef enum
 {
-	FALSE,
-	TRUE
+	FALSE = 0U,
+	TRUE  = 1U
 }bool;
 
 #endif /* INC_MAIN_H_ */
