@@ -10,6 +10,8 @@
 #include "main.h"
 #include "NMEA.h"
 #include <stdio.h>
+#include <string.h>
+#include <math.h>
 void UART_Init();
 void Error_handler();
 
@@ -90,22 +92,24 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 void UART_GPS()
 {
 	char start_gps_message[13] = "GPS data: \n";
-	char time_message[6] = "Time:";
-	char latitude_message[12] = "\nLatitude:";
-	char longitude_message[13] = "\nLongitude:";
-	char nr_satttelites_message[24] = "\nNumber of satellites:";
-	char altitude[12] = "\nAltitude:";
+	char time_message[6] = "Time: ";
+	char latitude_message[12] = "\nLatitude: ";
+	char longitude_message[13] = "\nLongitude: ";
+	char nr_satttelites_message[24] = "\nNumber of satellites: ";
+	char altitude_message[12] = "\nAltitude: ";
 
-	char string[10], substring[10];
-	memset(string,'\0',12);
-	memset(substring,'\0',12);
-
-
+	char string[20], substring[20];
+	memset(string,'\0',20);
+	memset(substring,'\0',20);
 
 
-	HAL_UART_Transmit(&console_output, start_gps_message, 12, HAL_UART_TIMEOUT_VALUE);
 
-	HAL_UART_Transmit(&console_output, time_message, 6, HAL_UART_TIMEOUT_VALUE);
+
+	HAL_UART_Transmit(&console_output, start_gps_message, strlen(start_gps_message), HAL_UART_TIMEOUT_VALUE);
+
+
+/********************************* DISPLAY TIME  *********************************/
+	HAL_UART_Transmit(&console_output, time_message, strlen(time_message), HAL_UART_TIMEOUT_VALUE);
 
 	sprintf(substring, "%d", gpgga.time.hr);
 	if(gpgga.time.hr < 10)
@@ -136,9 +140,73 @@ void UART_GPS()
 
 	HAL_UART_Transmit(&console_output, string, strlen(string), HAL_UART_TIMEOUT_VALUE);
 
-	//HAL_UART_Transmit(&console_output, latitude_message, 12, HAL_UART_TIMEOUT_VALUE);
-	//HAL_UART_Transmit(&console_output, gpgga.location.latitude, 12, HAL_UART_TIMEOUT_VALUE);
+/********************************* DISPLAY lATITUDE *********************************/
+	memset(string,'\0',20);
+	memset(substring,'\0',20);
+	HAL_UART_Transmit(&console_output, latitude_message, strlen(latitude_message), HAL_UART_TIMEOUT_VALUE);
 
 
+	//avem lungimea partii intregi daca locatie e: 4432.28 , avem 4
+
+
+	sprintf(string,"%d",(int)(gpgga.location.latitude / pow(10,gpgga.location.len_latitude_fractional_part)));
+
+	strcat(string,".");
+
+	sprintf(substring,"%d",(int)(gpgga.location.latitude % ((int)(pow(10,gpgga.location.len_latitude_fractional_part)))));
+
+	strcat(string,substring);
+	strcat(string," ");
+	strncat(string, gpgga.location.NS,1);
+	strcat(string,"\n");
+
+	HAL_UART_Transmit(&console_output, string, strlen(string), HAL_UART_TIMEOUT_VALUE);
+
+/********************************* DISPLAY LONGITUDE *********************************/
+	memset(string,'\0',20);
+	memset(substring,'\0',20);
+	HAL_UART_Transmit(&console_output, longitude_message, strlen(longitude_message), HAL_UART_TIMEOUT_VALUE);
+
+
+	sprintf(string,"%d",(int)(gpgga.location.longitude / pow(10,gpgga.location.len_longitude_fractional_part)));
+
+	strcat(string,".");
+
+	sprintf(substring,"%d",(int)(gpgga.location.longitude % ((int)(pow(10,gpgga.location.len_longitude_fractional_part)))));
+
+	strcat(string,substring);
+	strcat(string," ");
+	strncat(string, gpgga.location.EW,1);
+	strcat(string,"\n");
+
+	HAL_UART_Transmit(&console_output, string, strlen(string), HAL_UART_TIMEOUT_VALUE);
+
+/********************************* DISPLAY NUMBER OF SATELLITES *********************************/
+	memset(string,'\0',20);
+	memset(substring,'\0',20);
+	HAL_UART_Transmit(&console_output, nr_satttelites_message, strlen(nr_satttelites_message), HAL_UART_TIMEOUT_VALUE);
+
+	sprintf(substring, "%d", gpgga.nr_of_satellites);
+
+	strcpy(string,substring);
+	strcat(string,"\n");
+
+	HAL_UART_Transmit(&console_output, string, strlen(string), HAL_UART_TIMEOUT_VALUE);
+
+	/********************************* DISPLAY ALTITUDE *********************************/
+	memset(string,'\0',20);
+	memset(substring,'\0',20);
+	HAL_UART_Transmit(&console_output, altitude_message, strlen(altitude_message), HAL_UART_TIMEOUT_VALUE);
+
+	sprintf(string, "%d", gpgga.altitude / 10);
+
+	strcat(string,".");
+
+	sprintf(substring,"%d",(int)(gpgga.altitude % 10));
+
+	strcat(string,substring);
+	strcat(string,"\n\n");
+
+	HAL_UART_Transmit(&console_output, string, strlen(string), HAL_UART_TIMEOUT_VALUE);
 
 }

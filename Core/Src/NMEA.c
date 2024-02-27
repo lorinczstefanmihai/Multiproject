@@ -31,7 +31,7 @@ bool decode_NMEA_message(char input_data[550], GPGGA_struct *gpgga)
 
 	valid_id = idx;
 
-	for(int i = 0; i <= 5; i++)
+	for(int i = 0; i < 5; i++)
 	{
 		while(input_data[valid_id] != ',')
 			{
@@ -86,12 +86,13 @@ bool decode_NMEA_message(char input_data[550], GPGGA_struct *gpgga)
 
 	sscanf(buffer, "%d", &fractional_part);
 
+	gpgga->location.len_latitude_fractional_part = strlen(buffer);
 
 	gpgga->location.latitude = integral_part *pow(10, strlen(buffer)) + fractional_part;
 
 	idx++;
 
-	gpgga->location.NS = input_data[idx];
+	gpgga->location.NS[0] = input_data[idx];
 
 	idx += 2; //reach the longitude
 
@@ -110,6 +111,7 @@ bool decode_NMEA_message(char input_data[550], GPGGA_struct *gpgga)
 	idx++; // pass the point
 
 	sscanf(buffer, "%d", &integral_part);
+
 	memset(buffer, '\0', 12);
 
 	while(input_data[idx] != ',')
@@ -121,12 +123,13 @@ bool decode_NMEA_message(char input_data[550], GPGGA_struct *gpgga)
 
 	sscanf(buffer, "%d", &fractional_part);
 
+	gpgga->location.len_longitude_fractional_part = strlen(buffer);
 
 	gpgga->location.longitude = integral_part *pow(10, strlen(buffer)) + fractional_part;
 
 	idx++;
 
-	gpgga->location.EW = input_data[idx];
+	gpgga->location.EW[0] = input_data[idx];
 
 	idx += 2; //reach the fix quality
 

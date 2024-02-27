@@ -20,10 +20,12 @@ typedef struct
 
 typedef struct
 {
-	float latitude;
-	char NS;
-	float longitude;
-	char EW;
+	int latitude;
+	char NS[2];
+	int len_latitude_fractional_part;
+	int longitude;
+	char EW[2];
+	int len_longitude_fractional_part;
 }location_format;
 
 typedef struct
@@ -32,8 +34,8 @@ typedef struct
 	location_format location;
 	uint8_t fix_quality;
 	int nr_of_satellites;
-	float hdop;
-	float altitude;
+	int hdop;
+	int altitude;
 }GPGGA_struct;
 
 
